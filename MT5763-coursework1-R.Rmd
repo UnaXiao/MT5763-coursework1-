@@ -161,7 +161,7 @@ The time of day affects the demand for rental bikes as the demand for rental bik
 ```{r}
 ggplot(BikeSeoul,aes(Temperature,Count))+
   geom_point(col="skyblue",size = 0.7)+
-  geom_smooth(method = 'loess', formula = 'y ~ x')+
+  stat_smooth(method = 'loess', formula = 'y ~ x')+
   theme_bw()+
   labs(y = "The number of rented bikes in the Seoul",
        x = "The temperature (degree Celsius) in the Seoul " )
@@ -215,6 +215,18 @@ In Washington, DC, temperature was positively correlated with the number of bicy
 ```{r}
 model_Seoul <- lm(log(Count)~Season + Temperature + Humidity + WindSpeed, data = BikeSeoul)
 summary(model_Seoul)
+
+```
+
+```{r}
+model_Washington <- lm(log(Count)~Season + Temperature + Humidity + WindSpeed, data = BikeWashingtonDC)
+summary(model_Washington)
+```
+
+
+
+
+```{r}
 confint(model_Seoul, level = 0.97)
 round(exp(predict(model_Seoul,newdata = data.frame(Season="Winter",
                                                    Temperature =0,
@@ -222,10 +234,10 @@ round(exp(predict(model_Seoul,newdata = data.frame(Season="Winter",
                                                    WindSpeed=0.5),interval = "prediction",level = 0.9)),0)
 ```
 
+
+
 ## Statistical modelling---（Washington）
 ```{r}
-model_Washington <- lm(log(Count)~Season + Temperature + Humidity + WindSpeed, data = BikeWashingtonDC)
-summary(model_Washington)
 confint(model_Washington,level = 0.97)
 round(exp(predict(model_Washington,newdata = data.frame(Season="Winter",
                                                         Temperature =0,
