@@ -213,7 +213,7 @@ In Washington, DC, temperature was positively correlated with the number of bicy
 
 ## Statistical modelling---（Seoul）
 ```{r}
-model_Seoul <- lm(log(Count)~Season + Temperature + Humidity + WindSpeed, data = BikeSeoul)
+model_Seoul <- lm(log(Count)~Season + Temperature + WindSpeed + Humidity, data = BikeSeoul)
 summary(model_Seoul)
 
 ```
@@ -224,20 +224,20 @@ The adjusted R-squared is 0.4937, indicating that 49.37% of the variance in the 
 
 
 ```{r}
-model_Washington <- lm(log(Count)~Season + Temperature + Humidity + WindSpeed, data = BikeWashingtonDC)
+model_Washington <- lm(log(Count)~Season + Temperature + WindSpeed + Humidity, data = BikeWashingtonDC)
 summary(model_Washington)
 ```
 In the Washington, .DC. model, The residuals first quartile (1Q) and third quartile (Q3) have approximately the same magnitude, implying a more symmetrical distribution.
 Among the seasonal variables, the p-value for summer is 0.00218, which is less than 0.05,indicating that the logarithmic number of bicycle rentals in summer is  significant.
 The adjusted R-squared is 0.2777, indicating that 27.77% of the variance in the number of rented bicycles after logarithmization can be explained by the linear model.
-
+In both urban models, temperature and wind speed have a positive effect on the number of rented bicycles, while humidity has a negative effect on the number of rented bicycles. Moreover, the coefficients of humidity and wind speed are close in both models.
 
 ```{r}
 confint(model_Seoul, level = 0.97)
 round(exp(predict(model_Seoul,newdata = data.frame(Season="Winter",
                                                    Temperature =0,
-                                                   Humidity=20,
-                                                   WindSpeed=0.5),interval = "prediction",level = 0.9)),0)
+                                                   WindSpeed=0.5,
+                                                   Humidity=20),interval = "prediction",level = 0.9)),0)
 ```
 When the confidence level increases, the length of the confidence interval increases, and the reliability of the confidence interval decreases.The reliability of the 97% confidence interval is lower compared to the 95% confidence interval.
 
@@ -249,8 +249,8 @@ In Seoul ,the 90% prediction interval of the expected number of rented bikes for
 confint(model_Washington,level = 0.97)
 round(exp(predict(model_Washington,newdata = data.frame(Season="Winter",
                                                         Temperature =0,
-                                                        Humidity=20,
-                                                        WindSpeed=0.5),interval = "prediction",level = 0.9)),0)
+                                                        WindSpeed=0.5,
+                                                        Humidity=20),interval = "prediction",level = 0.9)),0)
 ```
 When the confidence level increases, the length of the confidence interval increases, and the reliability of the confidence interval decreases.The reliability of the 97% confidence interval is lower compared to the 95% confidence interval.
 
