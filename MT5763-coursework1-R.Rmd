@@ -2,7 +2,9 @@
 title: "Untitled"
 author: "Zeyu Xiao"
 date: "2021/10/8"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 ---
 
 ## https://github.com/UnaXiao/MT5763_1_200021215.git
@@ -144,13 +146,13 @@ BikeSeoul %>%
   theme_bw() +
   labs(y = "Average number of rented bikes in the Seoul")
 
-BikeWashingtonDC%>%
-  group_by(Hour)%>%
-  summarise(mean_count = mean(Count))%>%
-  ggplot(aes(Hour,mean_count))+
-  geom_point(col="red")+
-  geom_line()+
-  theme_bw()+
+BikeWashingtonDC %>%
+  group_by(Hour) %>%
+  summarise(mean_count = mean(Count)) %>%
+  ggplot(aes(Hour,mean_count)) +
+  geom_point(col = "red") +
+  geom_line() +
+  theme_bw() +
   labs(y = "Average number of rented bikes in the Washington")
 ```
 The average number of bicycle rentals in both cities follows much the same trend as the time of day, showing a downward trend between the hours of 18:00 and 4:00 am and 8:00 and 10:00 am. Other times of the day basically show an upward trend. The average number of bicycle rentals in both cities reaches its lowest value at 4 a.m. and its highest value at 18:00 a.m. and 19:00 a.m. in Seoul and Washington, D.C., respectively.
@@ -160,24 +162,24 @@ The time of day affects the demand for rental bikes as the demand for rental bik
 
 ## Is there an association between bike demand and the three meteorological variables (air temperature,wind speed and humidity)?---（Seoul）
 ```{r}
-ggplot(BikeSeoul,aes(Temperature,Count))+
-  geom_point(col="skyblue",size = 0.7)+
-  stat_smooth(method = 'loess', formula = 'y ~ x')+
-  theme_bw()+
+ggplot(BikeSeoul, aes(Temperature,Count)) +
+  geom_point(col="skyblue", size = 0.7) +
+  stat_smooth(method = 'loess', formula = 'y ~ x') +
+  theme_bw() +
   labs(y = "The number of rented bikes in the Seoul",
        x = "The temperature (degree Celsius) in the Seoul " )
 
-ggplot(BikeSeoul,aes(WindSpeed,Count))+
-  geom_point(col="skyblue",size = 0.7)+
-  stat_smooth(method = 'loess', formula = 'y ~ x')+
-  theme_bw()+
+ggplot(BikeSeoul, aes(WindSpeed,Count)) +
+  geom_point(col = "skyblue", size = 0.7) +
+  stat_smooth(method = 'loess', formula = 'y ~ x') +
+  theme_bw() +
   labs(y = "The number of rented bikes in the Seoul",
        x ="The windspeed (m/s) in the Seoul " )
 
-ggplot(BikeSeoul,aes(Humidity,Count))+
-  geom_point(col="skyblue",size = 0.7)+
-  stat_smooth(method = 'loess', formula = 'y ~ x')+
-  theme_bw()+
+ggplot(BikeSeoul,aes(Humidity,Count)) +
+  geom_point(col="skyblue", size = 0.7) +
+  stat_smooth(method = 'loess', formula = 'y ~ x') +
+  theme_bw() +
   labs(y = "The number of rented bikes in the Seoul",
        x = "The humidity (a%) in the Seoul" )
 ```
@@ -187,24 +189,24 @@ In Seoul, temperature was positively correlated with the number of rented bicycl
 
 ## Is there an association between bike demand and the three meteorological variables (air temperature,wind speed and humidity)?---（Washington）
 ```{r}
-ggplot(BikeWashingtonDC,aes(Temperature,Count))+
-  geom_point(col="skyblue",size = 0.7)+
-  stat_smooth(method = 'loess', formula = 'y ~ x')+
-  theme_bw()+
+ggplot(BikeWashingtonDC, aes(Temperature,Count)) +
+  geom_point(col = "skyblue", size = 0.7) +
+  stat_smooth(method = 'loess', formula = 'y ~ x') +
+  theme_bw() +
   labs(y = "The number of rented bikes in the Washington",
        x = "The temperature (degree Celsius) in Washington" )
 
-ggplot(BikeWashingtonDC,aes(WindSpeed,Count))+
-  geom_point(col="skyblue",size = 0.7)+
-  stat_smooth(method = 'loess', formula = 'y ~ x')+
+ggplot(BikeWashingtonDC,aes(WindSpeed,Count)) +
+  geom_point(col = "skyblue",size = 0.7) +
+  stat_smooth(method = 'loess', formula = 'y ~ x') +
   theme_bw()+
   labs(y = "The number of rented bikes in the Washington",
        x ="The windspeed (m/s) in the Washington " )
 
 ggplot(BikeWashingtonDC,aes(Humidity,Count))+
-  geom_point(col="skyblue",size = 0.7)+
+  geom_point(col = "skyblue",size = 0.7)+
   stat_smooth(method = 'loess', formula = 'y ~ x')+
-  theme_bw()+
+  theme_bw() +
   labs(y = "The number of rented bikes in the Washington",
        x ="The humidity (a%) in the Washington" )
 ```
@@ -235,10 +237,10 @@ In both urban models, temperature and wind speed have a positive effect on the n
 
 ```{r}
 confint(model_Seoul, level = 0.97)
-round(exp(predict(model_Seoul,newdata = data.frame(Season="Winter",
-                                                   Temperature =0,
-                                                   WindSpeed=0.5,
-                                                   Humidity=20),interval = "prediction",level = 0.9)),0)
+round(exp(predict(model_Seoul, newdata = data.frame(Season="Winter",
+                                                   Temperature = 0,
+                                                   WindSpeed = 0.5,
+                                                   Humidity = 20),interval = "prediction",level = 0.9)),0)
 ```
 When the confidence level increases, the length of the confidence interval increases, and the reliability of the confidence interval decreases.The reliability of the 97% confidence interval is lower compared to the 95% confidence interval.
 
@@ -247,11 +249,11 @@ In Seoul ,the 90% prediction interval of the expected number of rented bikes for
 
 ## Statistical modelling---（Washington）
 ```{r}
-confint(model_Washington,level = 0.97)
-round(exp(predict(model_Washington,newdata = data.frame(Season="Winter",
-                                                        Temperature =0,
-                                                        WindSpeed=0.5,
-                                                        Humidity=20),interval = "prediction",level = 0.9)),0)
+confint(model_Washington, level = 0.97)
+round(exp(predict(model_Washington, newdata = data.frame(Season = "Winter",
+                                                        Temperature = 0,
+                                                        WindSpeed = 0.5,
+                                                        Humidity = 20), interval = "prediction", level = 0.9)),0)
 ```
 When the confidence level increases, the length of the confidence interval increases, and the reliability of the confidence interval decreases.The reliability of the 97% confidence interval is lower compared to the 95% confidence interval.
 
