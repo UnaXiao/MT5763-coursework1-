@@ -109,7 +109,6 @@ In Seoul, the average number of rental bikes was highest in the summer, higher i
 In both cities, the trend in average number of rental bicycles over the seasons is almost identical to the trend in temperature over the seasons.
 
 
-
 ## Do holidays increase or decrease the demand for rented bikes?
 ```{r}
 BikeSeoul %>%
@@ -131,7 +130,8 @@ BikeWashingtonDC %>%
 
 Both cities have lower numbers of rental cars on holidays than on non-holidays, suggesting that there is less demand for rental cars on holidays.
 
-123445
+
+
 ## How does the time of day affect the demand for rented bikes?
 ```{r}
 BikeSeoul %>%
@@ -155,7 +155,6 @@ BikeWashingtonDC%>%
 The average number of bicycle rentals in both cities follows much the same trend as the time of day, showing a downward trend between the hours of 18:00 and 4:00 am and 8:00 and 10:00 am. Other times of the day basically show an upward trend. The average number of bicycle rentals in both cities reaches its lowest value at 4 a.m. and its highest value at 18:00 a.m. and 19:00 a.m. in Seoul and Washington, D.C., respectively.
 
 The time of day affects the demand for rental bikes as the demand for rental bikes is relatively high during commuting hours and relatively low during break times.
-
 
 
 ## Is there an association between bike demand and the three meteorological variables (air temperature,wind speed and humidity)?---（Seoul）
@@ -182,6 +181,8 @@ ggplot(BikeSeoul,aes(Humidity,Count))+
        x = "The humidity (a%) in the Seoul" )
 ```
 
+In Seoul, temperature was positively correlated with the number of rented bicycles when the temperature was below 30 degrees. However, when the temperature exceeded 30 degrees, the degree was negatively correlated with the number of rented bicycles. When the wind speed was less than 3 m/s, the wind speed was slightly positively correlated with the number of rented bicycles. When the wind speed exceeded 3 m/s, the wind speed was slightly negatively correlated with the number of rented bicycles. When the humidity was below 50%, the humidity was slightly positively correlated with the number of rented bicycles. When the humidity is higher than 50%, humidity is slightly negatively correlated with the number of rental bikes. The correlation between wind speed and humidity and the number of bicycles rented was weak.
+
 
 ## Is there an association between bike demand and the three meteorological variables (air temperature,wind speed and humidity)?---（Washington）
 ```{r}
@@ -206,6 +207,8 @@ ggplot(BikeWashingtonDC,aes(Humidity,Count))+
   labs(y = "The number of rented bikes in the Washington",
        x ="The humidity (a%) in the Washington" )
 ```
+
+In Washington, DC, temperature was positively correlated with the number of bicycles rented, and wind speed was slightly positively correlated with the number of bicycles rented when wind speed was less than 5 m/s. When wind speed exceeded 5 m/s, wind speed was slightly negatively correlated with the number of rented bicycles. There was no significant correlation between wind speed and the number of rented bicycles. When humidity was below 25%, there was a slight positive correlation between humidity and the number of bicycles rented. When humidity was above 25%, humidity showed a negative correlation with the number of bicycles rented.
 
 
 ## Statistical modelling---（Seoul）
