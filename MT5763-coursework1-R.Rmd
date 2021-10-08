@@ -1,0 +1,232 @@
+---
+title: "Untitled"
+author: "Zeyu Xiao"
+date: "2021/10/8"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+setwd("C:\\Users\\Administrator\\Desktop\\Bike\\")
+library(tidyverse)
+library(lubridate)
+BikeSeoul <- read_csv("BikeSeoul.csv")
+BikeWashingtonDC <- read_csv("BikeWashingtonDC.csv")
+
+```
+
+## Data wrangling
+```{r cars}
+BikeSeoul <- BikeSeoul %>%
+  ## remove columns
+  select("Date","Rented Bike Count","Hour","Temperature(C)","Humidity(%)", 
+         "Wind speed (m/s)","Seasons","Holiday","Functioning Day") %>%
+  filter(`Functioning Day`=="Yes")%>% #filter out observations,
+  ## remove the functioning day
+  select(- "Functioning Day") %>%
+  ## change the name of the columns
+  rename(Count = "Rented Bike Count",
+         Temperature = "Temperature(C)",
+         Humidity = "Humidity(%)",
+         WindSpeed = "Wind speed (m/s)",
+         Season = Seasons) %>%
+  ## convert Date to date object
+  mutate(Date =  as.Date(Date, "%d/%m/%Y"),
+         ## Create a new variable called FullDate
+         FullDate = make_datetime(year = year(Date),
+                                  month = month(Date),
+                                  day = day(Date), 
+                                  hour = Hour), 
+         ## Change the factor levels of Holiday
+         Holiday = factor(Holiday,levels = c("Holiday","No Holiday"), labels = c("Yes","No")),
+         ## Change the order of the Season factor levels
+         Season = factor(Season, levels = c("Spring", "Summer", "Autumn", "Winter"))
+  )
+
+BikeWashingtonDC <- BikeWashingtonDC %>%
+  ## remove columns
+  select("dteday", "cnt", "hr", "temp", "hum", "windspeed", "season", "holiday")%>%
+  ## change the name of the columns
+  rename(Date = "dteday", Season = "season",Hour = "hr",Holiday = "holiday", 
+         Temperature = "temp",Humidity = "hum", WindSpeed = "windspeed", Count = "cnt")%>% 
+  ## Convert Humidity
+  mutate(Humidity = Humidity*100,
+         ## Convert Temperature
+         Temperature = Temperature*(39+8)-8,
+         ## Convert WindSpeed
+         WindSpeed = WindSpeed*67/3.6,
+         ## Change the order of the Season factor levels
+         Season = factor(Season, levels = c("1", "2", "3", "4"), labels = c("Spring", "Summer", "Autumn", "Winter")),
+         ## Change the factor levels of Holiday
+         Holiday = factor(Holiday,levels = c("1","0"), labels = c("Yes","No")),
+         ## convert Date to date object
+         Date =  as.Date(Date),
+         ## Create a new variable called FullDate
+         FullDate = make_datetime(year = year(Date),
+                                  month = month(Date),
+                                  day = day(Date), 
+                                  hour = Hour)
+  )
+
+```
+
+## How does air temperature varies over the course of a year?
+```{r pressure, echo=FALSE}
+ggplot(BikeSeoul, aes(Season, Temperature, fill=Season)) +
+  geom_boxplot() +
+  theme_bw() +
+  labs(y = "Temperature in the Seoul")
+
+ggplot(BikeWashingtonDC, aes(Season, Temperature, fill=Season))+
+  geom_boxplot() +
+  theme_bw() +
+  labs(y = "Temperature in the Washington")
+```
+Seoul has the highest temperature in summer and the lowest temperature in winter. Spring and autumn temperatures are relatively close to each other. In Washington, D.C., temperatures are highest in the autumn, lowest in the spring, and slightly warmer in the summer than in the winter.
+
+Temperatures in these two cities have completely different trends with the seasons, with spring and summer temperatures in Seoul being significantly higher than those in Washington, D.C., and autumn and winter temperatures in Seoul being significantly lower than those in Washington, D.C.
+
+
+## How does air temperature varies over the course of a year?
+```{r}
+BikeSeoul %>%
+  group_by(Season) %>%
+  summarise(mean_count = mean(Count)) %>%
+  ggplot(aes(Season, mean_count, fill=Season)) +
+  geom_col() +
+  theme_bw() +
+  labs(y = "Average number of rented bikes in the Seoul")
+
+BikeWashingtonDC %>%
+  group_by(Season) %>%
+  summarise(mean_count = mean(Count)) %>%
+  ggplot(aes(Season, mean_count, fill = Season)) +
+  geom_col() +
+  theme_bw() +
+  labs(y = "Average number of rented bikes in the Washington")
+```
+In Seoul, the average number of rental bikes was highest in the summer, higher in the autumn than in the spring, and significantly lower in the winter than in the other three seasons. In Washington, D.C., the average number of bicycles rented was highest in the autumn, slightly lower in the summer and winter than in the autumn, and significantly lower in the spring than in the other three seasons.
+
+In both cities, the trend in average number of rental bicycles over the seasons is almost identical to the trend in temperature over the seasons.
+
+
+
+## Do holidays increase or decrease the demand for rented bikes?
+```{r}
+BikeSeoul %>%
+  group_by(Holiday) %>%
+  summarise(mean_count = mean(Count)) %>%
+  ggplot(aes(Holiday, mean_count, fill = Holiday)) +
+  geom_col() +
+  theme_bw() +
+  labs(y = "Average number of rented bikes in the Seoul")
+
+BikeWashingtonDC %>%
+  group_by(Holiday) %>%
+  summarise(mean_count = mean(Count)) %>%
+  ggplot(aes(Holiday, mean_count, fill = Holiday)) +
+  geom_col() +
+  theme_bw() +
+  labs(y = "Average number of rented bikes in the Washington")
+```
+
+Both cities have lower numbers of rental cars on holidays than on non-holidays, suggesting that there is less demand for rental cars on holidays.
+
+123445
+## How does the time of day affect the demand for rented bikes?
+```{r}
+BikeSeoul %>%
+  group_by(Hour) %>%
+  summarise(mean_count = mean(Count)) %>%
+  ggplot(aes(Hour, mean_count)) +
+  geom_point(col = "red") +
+  geom_line() +
+  theme_bw() +
+  labs(y = "Average number of rented bikes in the Seoul")
+
+BikeWashingtonDC%>%
+  group_by(Hour)%>%
+  summarise(mean_count = mean(Count))%>%
+  ggplot(aes(Hour,mean_count))+
+  geom_point(col="red")+
+  geom_line()+
+  theme_bw()+
+  labs(y = "Average number of rented bikes in the Washington")
+```
+The average number of bicycle rentals in both cities follows much the same trend as the time of day, showing a downward trend between the hours of 18:00 and 4:00 am and 8:00 and 10:00 am. Other times of the day basically show an upward trend. The average number of bicycle rentals in both cities reaches its lowest value at 4 a.m. and its highest value at 18:00 a.m. and 19:00 a.m. in Seoul and Washington, D.C., respectively.
+
+The time of day affects the demand for rental bikes as the demand for rental bikes is relatively high during commuting hours and relatively low during break times.
+
+
+
+## Is there an association between bike demand and the three meteorological variables (air temperature,wind speed and humidity)?---（Seoul）
+```{r}
+ggplot(BikeSeoul,aes(Temperature,Count))+
+  geom_point(col="skyblue",size = 0.7)+
+  geom_smooth(method = 'loess', formula = 'y ~ x')+
+  theme_bw()+
+  labs(y = "The number of rented bikes in the Seoul",
+       x = "The temperature (degree Celsius) in the Seoul " )
+
+ggplot(BikeSeoul,aes(WindSpeed,Count))+
+  geom_point(col="skyblue",size = 0.7)+
+  stat_smooth(method = 'loess', formula = 'y ~ x')+
+  theme_bw()+
+  labs(y = "The number of rented bikes in the Seoul",
+       x ="The windspeed (m/s) in the Seoul " )
+
+ggplot(BikeSeoul,aes(Humidity,Count))+
+  geom_point(col="skyblue",size = 0.7)+
+  stat_smooth(method = 'loess', formula = 'y ~ x')+
+  theme_bw()+
+  labs(y = "The number of rented bikes in the Seoul",
+       x = "The humidity (a%) in the Seoul" )
+```
+
+
+## Is there an association between bike demand and the three meteorological variables (air temperature,wind speed and humidity)?---（Washington）
+```{r}
+ggplot(BikeWashingtonDC,aes(Temperature,Count))+
+  geom_point(col="skyblue",size = 0.7)+
+  stat_smooth(method = 'loess', formula = 'y ~ x')+
+  theme_bw()+
+  labs(y = "The number of rented bikes in the Washington",
+       x = "The temperature (degree Celsius) in Washington" )
+
+ggplot(BikeWashingtonDC,aes(WindSpeed,Count))+
+  geom_point(col="skyblue",size = 0.7)+
+  stat_smooth(method = 'loess', formula = 'y ~ x')+
+  theme_bw()+
+  labs(y = "The number of rented bikes in the Washington",
+       x ="The windspeed (m/s) in the Washington " )
+
+ggplot(BikeWashingtonDC,aes(Humidity,Count))+
+  geom_point(col="skyblue",size = 0.7)+
+  stat_smooth(method = 'loess', formula = 'y ~ x')+
+  theme_bw()+
+  labs(y = "The number of rented bikes in the Washington",
+       x ="The humidity (a%) in the Washington" )
+```
+
+
+## Statistical modelling---（Seoul）
+```{r}
+model_Seoul <- lm(log(Count)~Season + Temperature + Humidity + WindSpeed, data = BikeSeoul)
+summary(model_Seoul)
+confint(model_Seoul, level = 0.97)
+round(exp(predict(model_Seoul,newdata = data.frame(Season="Winter",
+                                                   Temperature =0,
+                                                   Humidity=20,
+                                                   WindSpeed=0.5),interval = "prediction",level = 0.9)),0)
+```
+
+## Statistical modelling---（Washington）
+```{r}
+model_Washington <- lm(log(Count)~Season + Temperature + Humidity + WindSpeed, data = BikeWashingtonDC)
+summary(model_Washington)
+confint(model_Washington,level = 0.97)
+round(exp(predict(model_Washington,newdata = data.frame(Season="Winter",
+                                                        Temperature =0,
+                                                        Humidity=20,
+                                                        WindSpeed=0.5),interval = "prediction",level = 0.9)),0)
+```
+
